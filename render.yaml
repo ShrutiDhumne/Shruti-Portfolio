@@ -1,0 +1,40 @@
+# Render blueprint — https://render.com/docs/blueprint-spec
+#
+# The site is a Next.js static export (`output: "export"` in next.config.ts), so
+# it deploys as a Static Site: `npm run build` writes plain HTML/CSS/JS into
+# ./out and Render serves it from its CDN. No server, no runtime, free tier.
+
+services:
+  - type: web
+    name: shruti-portfolio
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./out
+
+    # Next 16 requires Node >= 20.9. Render's default is older, so pin it —
+    # without this the build fails on an unhelpful syntax error.
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+
+    # Previews for every pull request.
+    pullRequestPreviewsEnabled: true
+
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+
+      # Hashed assets never change under the same name — cache them forever.
+      - path: /_next/static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

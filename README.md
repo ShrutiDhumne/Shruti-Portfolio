@@ -14,7 +14,25 @@ npm run dev      # http://localhost:3000
 npm run build    # static export → ./out
 ```
 
-`npm run build` produces a fully static site in `out/`. Drop it on Vercel, Netlify, GitHub Pages, S3 — anywhere. There's no server.
+`npm run build` produces a fully static site in `out/`. There's no server — it's HTML, CSS, JS and self-hosted fonts.
+
+## Deploy (Render)
+
+[`render.yaml`](render.yaml) is a Render blueprint. It deploys as a **Static Site**:
+
+| | |
+|---|---|
+| Build command | `npm ci && npm run build` |
+| Publish directory | `out` |
+| Node version | 22 (Next 16 needs ≥ 20.9) |
+
+**To deploy:** on [Render](https://dashboard.render.com) → **New → Blueprint** → connect this repo. Render reads `render.yaml` and configures everything itself.
+
+*(Or **New → Static Site** and enter the build command and publish directory by hand — same result.)*
+
+Every push to `main` redeploys. The blueprint also sets security headers and immutable caching for hashed assets.
+
+The same `out/` works unchanged on Netlify, GitHub Pages, Cloudflare Pages or S3 if you ever want to move.
 
 ---
 
