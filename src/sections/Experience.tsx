@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { RevealHeading } from "@/components/RevealHeading";
 import { SectionLabel } from "@/components/SectionLabel";
 import { experience, projects, type Project } from "@/content/resume";
 
@@ -23,7 +24,11 @@ export function Experience() {
         <div className="grid md:grid-cols-12 md:gap-x-6">
           <Reveal className="md:col-span-5">
             <SectionLabel>Experience</SectionLabel>
-            <h2 className="display t-h2 mt-5 text-[var(--ink)]">Where I&apos;ve worked.</h2>
+            <RevealHeading
+              as="h2"
+              className="display t-h2 mt-5 text-[var(--ink)]"
+              text="Where I’ve worked."
+            />
           </Reveal>
         </div>
 

@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { RevealHeading } from "@/components/RevealHeading";
 import { SectionLabel } from "@/components/SectionLabel";
 import { education, achievements } from "@/content/resume";
 
@@ -20,7 +21,11 @@ export function Recognition() {
         <div className="grid md:grid-cols-12 md:gap-x-6">
           <Reveal className="md:col-span-5">
             <SectionLabel>Background</SectionLabel>
-            <h2 className="display t-h2 mt-5 text-[var(--ink)]">Where it started.</h2>
+            <RevealHeading
+              as="h2"
+              className="display t-h2 mt-5 text-[var(--ink)]"
+              text="Where it started."
+            />
           </Reveal>
         </div>
 

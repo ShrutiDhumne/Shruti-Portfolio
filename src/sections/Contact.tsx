@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { RevealHeading } from "@/components/RevealHeading";
 import { SectionLabel } from "@/components/SectionLabel";
 import { ContactForm } from "@/components/ContactForm";
 import { profile } from "@/content/resume";
@@ -21,14 +22,13 @@ export function Contact() {
             <div className="md:col-span-5 md:pt-8">
               <Reveal>
                 <SectionLabel>Contact</SectionLabel>
-                <h2
-                  className="display t-h2 mt-4 text-[var(--ink)]"
-                  style={{ hyphens: "manual" }}
-                >
-                  Got a system that has to{" "}
-                  <em className="italic text-[var(--accent)]">hold</em>?
-                </h2>
               </Reveal>
+              <RevealHeading
+                as="h2"
+                className="display t-h2 mt-4 text-[var(--ink)]"
+                text="Got a system that has to hold?"
+                accent="hold?"
+              />
 
               <Reveal delay={80}>
                 {/* t-body, not t-lead: a 22px lead in a 5-column well is ~34

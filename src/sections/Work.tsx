@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { RevealHeading } from "@/components/RevealHeading";
 import { SectionLabel } from "@/components/SectionLabel";
 import { projects, type Project } from "@/content/resume";
 
@@ -101,7 +102,11 @@ export function Work() {
         <div className="md:col-span-5">
           <Reveal>
             <SectionLabel>Selected work</SectionLabel>
-            <h2 className="display t-h2 mt-5 text-[var(--ink)]">Systems that had to hold up.</h2>
+            <RevealHeading
+              as="h2"
+              className="display t-h2 mt-5 text-[var(--ink)]"
+              text="Systems that had to hold up."
+            />
           </Reveal>
         </div>
         <div className="md:col-span-6 md:col-start-7">

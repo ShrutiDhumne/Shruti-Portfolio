@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 
 const LINKS = [
   { id: "top", label: "Home" },
@@ -126,7 +127,19 @@ export function Nav() {
                     className="relative flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-[0.8125rem] transition-colors duration-300"
                     style={{ color: on ? "var(--ink)" : "var(--ink-muted)" }}
                   >
-                    {/* the indicator — a dot, not an underline. "You are here." */}
+                    {/* The lozenge GLIDES between items instead of blinking on and
+                        off, because motion's `layoutId` animates one shared element
+                        from its old box to its new one. It sits behind the label
+                        (-z-10) and is purely decorative — the accessible "you are
+                        here" is `aria-current`, which is unaffected. */}
+                    {on && (
+                      <motion.span
+                        aria-hidden
+                        layoutId="nav-active"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 -z-10 rounded-full bg-[var(--accent-soft)]"
+                      />
+                    )}
                     <span
                       aria-hidden
                       className="h-1.5 w-1.5 rounded-full transition-all duration-500"

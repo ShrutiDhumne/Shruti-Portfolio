@@ -1,4 +1,6 @@
 import { Reveal } from "@/components/Reveal";
+import { Magnetic } from "@/components/Magnetic";
+import { RevealHeading } from "@/components/RevealHeading";
 import { SectionLabel } from "@/components/SectionLabel";
 import { profile } from "@/content/resume";
 
@@ -36,13 +38,17 @@ export function Hero() {
         <SectionLabel>Hello, I&apos;m Shruti</SectionLabel>
       </Reveal>
 
-      {/* the headline — the one loud thing on the page */}
-      <Reveal delay={90}>
-        <h1 className="display t-hero mt-8 max-w-[16ch] text-[var(--ink)]">
-          I build backends that{" "}
-          <em className="italic text-[var(--accent)]">take a beating</em>.
-        </h1>
-      </Reveal>
+      {/* The headline — the one loud thing on the page, and now the one that
+          announces itself: the words rise out from behind a mask, in sequence.
+          Not wrapped in <Reveal>, which would fade the whole block in at once
+          and fight the per-word stagger underneath it. */}
+      <RevealHeading
+        as="h1"
+        className="display t-hero mt-8 max-w-[17ch] text-[var(--ink)]"
+        text="I build scalable backends and intelligent AI systems."
+        accent="intelligent AI systems."
+        delay={120}
+      />
 
       {/* Rule left, description right. The whole point is that the rule sits ON
           the description's first line — one horizontal move, not two unrelated
@@ -56,9 +62,9 @@ export function Hero() {
         </Reveal>
         <Reveal delay={200} className="md:col-span-6 md:col-start-7">
           <p className="t-body max-w-[46ch]">
-            Event ingestion, identity resolution, and async pipelines that push a hundred jobs
-            through a rate-limited API and still finish. Three years of it — mostly on the half of
-            the product nobody demos.
+            Three years building AI-powered tools, agent-based platforms and automation pipelines
+            for product and enterprise teams — event ingestion, identity resolution, and async
+            systems built to hold at scale.
           </p>
         </Reveal>
       </div>
@@ -85,13 +91,15 @@ export function Hero() {
         </Reveal>
 
         <Reveal delay={320}>
-          <a
-            href="#work"
-            className="inline-flex min-h-12 items-center rounded-full bg-[var(--ink)] px-7 text-sm font-medium text-[var(--paper)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--accent)]"
-            style={{ boxShadow: "var(--shadow-md)" }}
-          >
-            See my work
-          </a>
+          <Magnetic>
+            <a
+              href="#work"
+              className="inline-flex min-h-12 items-center rounded-full bg-[var(--ink)] px-7 text-sm font-medium text-[var(--paper)] transition-colors duration-300 hover:bg-[var(--accent)]"
+              style={{ boxShadow: "var(--shadow-md)" }}
+            >
+              See my work
+            </a>
+          </Magnetic>
         </Reveal>
       </div>
     </section>

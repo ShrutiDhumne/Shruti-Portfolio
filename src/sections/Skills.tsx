@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { RevealHeading } from "@/components/RevealHeading";
 import { SectionLabel } from "@/components/SectionLabel";
 import { skillGroups } from "@/content/resume";
 
@@ -18,7 +19,11 @@ export function Skills() {
       <div className="grid md:grid-cols-12 md:gap-x-6">
         <Reveal className="md:col-span-5">
           <SectionLabel>Toolkit</SectionLabel>
-          <h2 className="display t-h2 mt-5 text-[var(--ink)]">What I reach for.</h2>
+          <RevealHeading
+            as="h2"
+            className="display t-h2 mt-5 text-[var(--ink)]"
+            text="What I reach for."
+          />
         </Reveal>
       </div>
 

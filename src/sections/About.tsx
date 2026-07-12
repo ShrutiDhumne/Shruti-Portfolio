@@ -1,4 +1,6 @@
 import { Reveal } from "@/components/Reveal";
+import { Counter } from "@/components/Counter";
+import { RevealHeading } from "@/components/RevealHeading";
 import { SectionLabel } from "@/components/SectionLabel";
 import { facts } from "@/content/resume";
 
@@ -19,9 +21,11 @@ export function About() {
           <div className="md:col-span-5">
             <Reveal>
               <SectionLabel>About</SectionLabel>
-              <h2 className="display t-h2 mt-5 text-[var(--ink)]" style={{ hyphens: "manual" }}>
-                The unglamorous, load-bearing half.
-              </h2>
+              <RevealHeading
+                as="h2"
+                className="display t-h2 mt-5 text-[var(--ink)]"
+                text="The unglamorous, load-bearing half."
+              />
             </Reveal>
 
             {/* The figures live in the rail, under the heading. As a full-width band
@@ -40,7 +44,7 @@ export function About() {
                       {f.label}
                     </dt>
                     <dd className="display text-[2.75rem] leading-none tabular-nums text-[var(--ink)]">
-                      {f.value}
+                      <Counter value={f.value} />
                       {/* "3yrs" set as one 64px serif word read as a typo. The suffix
                           is a footnote to the numeral, not part of it. */}
                       {f.suffix ? (

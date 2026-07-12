@@ -439,3 +439,82 @@ body {
     align-self: flex-start;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOTION
+
+   Everything below is gated on the `js` class (set pre-paint in layout.tsx)
+   and killed entirely by prefers-reduced-motion. Without JavaScript no rule
+   here matches, so nothing is ever hidden behind an animation that can't run.
+   Transform and opacity only — no layout, no paint, all compositor.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── the masked heading reveal ─────────────────────────────────── */
+
+  .js .rv .rv-mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    /* Descenders. Instrument Serif's g/y/p hang well below the baseline, and
+       an overflow-hidden mask shears them clean off. Pad the mask, then pull
+       the padding back out with an equal negative margin so the line box is
+       unchanged. This is the detail that makes or breaks the effect. */
+    padding-bottom: 0.16em;
+    margin-bottom: -0.16em;
+  }
+
+  .js .rv .rv-word {
+    display: inline-block;
+    transform: translateY(110%);
+    opacity: 0;
+    transition:
+      transform 0.9s var(--ease),
+      opacity 0.9s var(--ease);
+    /* 45ms per word — enough to read as a sweep, not so much that a six-word
+       heading takes half a second to finish arriving. */
+    transition-delay: calc(var(--rv-delay, 0ms) + var(--rv-i, 0) * 45ms);
+  }
+
+  .js .rv.is-in .rv-word {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── the card: a rule that draws itself across the top on hover ── */
+
+  .card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.55s var(--ease);
+  }
+
+  .card:hover::after,
+  .card:focus-within::after {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .rv .rv-word {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+  .js .rv .rv-mask {
+    overflow: visible;
+  }
+  .card::after {
+    display: none;
+  }
+}
