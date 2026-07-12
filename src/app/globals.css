@@ -25,6 +25,10 @@
   --accent-deep: #8f3323; /* for small text on the tint — 4.26:1 was not enough at 12px */
   --accent-soft: #f7ebe8; /* tint for quiet highlights */
 
+  /* Deliberately below text contrast. The marquee is decoration, it is
+     aria-hidden, and every word in it is real readable text in Skills. */
+  --marquee: #ded9cf;
+
   --shadow-sm: 0 1px 2px rgba(26, 26, 26, 0.04);
   --shadow-md: 0 4px 16px -4px rgba(26, 26, 26, 0.08), 0 2px 4px rgba(26, 26, 26, 0.03);
   --shadow-lg: 0 12px 32px -8px rgba(26, 26, 26, 0.12), 0 4px 8px rgba(26, 26, 26, 0.04);
@@ -106,14 +110,14 @@ body {
 }
 
 .t-hero {
-  font-size: clamp(2.75rem, 7vw, 5.75rem);
-  line-height: 1.02;
-  letter-spacing: -0.025em;
+  font-size: clamp(3rem, 8.4vw, 7rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
 }
 
 .t-h2 {
-  font-size: clamp(2rem, 4vw, 3.25rem);
-  line-height: 1.08;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1.05;
 }
 
 .t-h3 {
@@ -265,6 +269,27 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .card:hover {
     transform: none;
+  }
+}
+
+/* The ghosted band. Translating exactly -50% lands copy B where copy A began,
+   so the loop is seamless. Pure compositor work — transform only. */
+@keyframes drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  animation: drift 42s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    animation: none;
   }
 }
 

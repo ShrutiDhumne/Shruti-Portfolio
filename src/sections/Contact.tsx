@@ -1,4 +1,6 @@
 import { Reveal } from "@/components/Reveal";
+import { SectionLabel } from "@/components/SectionLabel";
+import { ContactForm } from "@/components/ContactForm";
 import { profile } from "@/content/resume";
 
 export function Contact() {
@@ -6,44 +8,74 @@ export function Contact() {
 
   return (
     <>
-      <section id="contact" className="wrap section">
-        <div className="max-w-3xl">
-          <Reveal>
-            <p className="t-meta">Contact</p>
-          </Reveal>
+      {/* Paper, not the recessed band — Recognition above is already banded, and
+          two in a row read as one undifferentiated block. */}
+      <section id="contact" className="border-t border-[var(--rule)]">
+        <div className="wrap section">
+          <div className="grid gap-14 md:grid-cols-12 md:gap-14">
+            {/* the pitch */}
+            <div className="md:col-span-5">
+              <Reveal>
+                <SectionLabel>Contact</SectionLabel>
+                <h2
+                  className="display t-h2 mt-5 text-[var(--ink)]"
+                  style={{ hyphens: "manual" }}
+                >
+                  Got a system that has to{" "}
+                  <em className="italic text-[var(--accent)]">hold</em>?
+                </h2>
+              </Reveal>
 
-          <Reveal delay={80}>
-            <h2 className="display t-h2 mt-5 text-[var(--ink)]">
-              Got a system that has to <em className="italic text-[var(--accent)]">hold</em>?
-            </h2>
-          </Reveal>
+              <Reveal delay={80}>
+                <p className="t-lead mt-6">
+                  {profile.availability}. If nobody on your team wants to own the hard half of it,
+                  that&apos;s the conversation I want to have.
+                </p>
+              </Reveal>
 
-          <Reveal delay={140}>
-            <p className="t-lead mt-6">
-              {profile.availability}. If nobody on your team wants to own the hard half of it,
-              that&apos;s the conversation I want to have.
-            </p>
-          </Reveal>
-
-          <Reveal delay={200}>
-            <div className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-3">
-              <a
-                href={`mailto:${profile.email}`}
-                className="inline-flex min-h-12 items-center rounded-full bg-[var(--ink)] px-7 text-sm font-medium text-[var(--paper)] transition-all duration-500 hover:-translate-y-0.5 hover:bg-[var(--accent)]"
-                style={{ boxShadow: "var(--shadow-md)" }}
-              >
-                {profile.email}
-              </a>
-              <a
-                href={profile.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-h-12 items-center rounded-full border border-[var(--rule-strong)] px-7 text-sm font-medium text-[var(--ink)] transition-colors duration-300 hover:border-[var(--ink)]"
-              >
-                LinkedIn ↗
-              </a>
+              <Reveal delay={140}>
+                <dl className="mt-10 space-y-5 border-t border-[var(--rule)] pt-8">
+                  <div>
+                    <dt className="t-meta">Email</dt>
+                    <dd className="mt-1.5">
+                      <a
+                        href={`mailto:${profile.email}`}
+                        className="link inline-flex min-h-11 items-center text-[0.9375rem]"
+                      >
+                        {profile.email}
+                      </a>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="t-meta">LinkedIn</dt>
+                    <dd className="mt-1.5">
+                      <a
+                        href={profile.linkedin}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="link inline-flex min-h-11 items-center text-[0.9375rem]"
+                      >
+                        {profile.linkedinLabel} ↗
+                      </a>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="t-meta">Based in</dt>
+                    <dd className="mt-1.5 text-[0.9375rem] text-[var(--ink-soft)]">
+                      {profile.location} · open to remote
+                    </dd>
+                  </div>
+                </dl>
+              </Reveal>
             </div>
-          </Reveal>
+
+            {/* the form */}
+            <div className="md:col-span-6 md:col-start-7">
+              <Reveal delay={120}>
+                <ContactForm />
+              </Reveal>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { SectionLabel } from "@/components/SectionLabel";
 import { projects, type Project } from "@/content/resume";
 
 /* Etherwise work leads; the Veritas projects live inside the Experience timeline,
@@ -84,7 +85,7 @@ export function Work() {
     <section id="work" className="wrap section">
       <div className="max-w-2xl">
         <Reveal>
-          <p className="t-meta">Selected work</p>
+          <SectionLabel>Selected work</SectionLabel>
           <h2 className="display t-h2 mt-5 text-[var(--ink)]">
             Systems that had to hold up.
           </h2>

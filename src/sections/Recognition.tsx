@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { SectionLabel } from "@/components/SectionLabel";
 import { education, achievements } from "@/content/resume";
 
 export function Recognition() {
@@ -12,7 +13,7 @@ export function Recognition() {
           {/* ── education ── */}
           <div>
             <Reveal>
-              <p className="t-meta">Education</p>
+              <SectionLabel>Education</SectionLabel>
             </Reveal>
 
             {education.map((e, i) => (
@@ -39,7 +40,7 @@ export function Recognition() {
           {/* ── achievements ── */}
           <div>
             <Reveal>
-              <p className="t-meta">Recognition</p>
+              <SectionLabel>Recognition</SectionLabel>
             </Reveal>
 
             {achievements.map((a, i) => (

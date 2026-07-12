@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { SectionLabel } from "@/components/SectionLabel";
 import { skillGroups } from "@/content/resume";
 
 /**
@@ -11,7 +12,7 @@ export function Skills() {
     <section id="skills" className="wrap section">
       <div className="max-w-2xl">
         <Reveal>
-          <p className="t-meta">Toolkit</p>
+          <SectionLabel>Toolkit</SectionLabel>
           <h2 className="display t-h2 mt-5 text-[var(--ink)]">What I reach for.</h2>
         </Reveal>
       </div>

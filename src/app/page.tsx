@@ -1,4 +1,5 @@
 import { Nav } from "@/components/Nav";
+import { Marquee } from "@/components/Marquee";
 import { Hero } from "@/sections/Hero";
 import { About } from "@/sections/About";
 import { Work } from "@/sections/Work";
@@ -21,6 +22,7 @@ export default function Page() {
 
       <main id="main">
         <Hero />
+        <Marquee />
         <About />
         <Work />
         <Experience />

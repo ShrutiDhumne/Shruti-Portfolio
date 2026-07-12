@@ -78,6 +78,21 @@ Against the static export, not the dev server:
 - **Contrast** → all 248 text nodes meet WCAG AA
 - **0** external requests · **0** cookies · **0** localStorage/sessionStorage
 
+## Contact form — connect it to your inbox (2 minutes)
+
+The site is a static export with no backend, so the form posts to [Web3Forms](https://web3forms.com), which emails submissions to you. Free, no server, no account.
+
+1. Go to **[web3forms.com](https://web3forms.com)** → enter your email → they send you an **access key**.
+2. **Local:** create `.env.local` in the project root:
+   ```
+   NEXT_PUBLIC_WEB3FORMS_KEY=your-key-here
+   ```
+3. **Render:** Dashboard → your service → **Environment** → add the same variable → redeploy.
+
+Until a key is set, the form still renders and validates, but tells the visitor to email you directly rather than silently swallowing their message. It never fails quietly.
+
+The form collects name, email, company, enquiry type and message, and has a honeypot field to absorb bots.
+
 ## Things to add
 
 Deliberately absent rather than invented — all one-line edits in `src/content/resume.ts`:

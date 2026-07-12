@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { SectionLabel } from "@/components/SectionLabel";
 import { experience, projects, type Project } from "@/content/resume";
 
 const byId = (id: string): Project | undefined => projects.find((p) => p.id === id);
@@ -19,7 +20,7 @@ export function Experience() {
       <div className="wrap section">
         <div className="max-w-2xl">
           <Reveal>
-            <p className="t-meta">Experience</p>
+            <SectionLabel>Experience</SectionLabel>
             <h2 className="display t-h2 mt-5 text-[var(--ink)]">Where I&apos;ve worked.</h2>
           </Reveal>
         </div>

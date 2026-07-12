@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { SectionLabel } from "@/components/SectionLabel";
 
 const FACTS = [
   { value: "3", suffix: "yrs", label: "Building production systems" },
@@ -11,17 +12,23 @@ export function About() {
   return (
     <section id="about" className="border-t border-[var(--rule)] bg-[var(--paper-2)]">
       <div className="wrap section">
-        <div className="grid gap-14 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-4">
+        <div className="grid gap-14 md:grid-cols-12 md:gap-14">
+          {/* Five columns, not four. At the larger heading scale a four-column
+              well was too narrow to set "load-bearing" without hyphenating it
+              mid-word, which reads as a typo rather than a line break. */}
+          <div className="md:col-span-5">
             <Reveal>
-              <p className="t-meta">About</p>
-              <h2 className="display t-h2 mt-5 text-[var(--ink)]">
+              <SectionLabel>About</SectionLabel>
+              <h2
+                className="display t-h2 mt-5 text-[var(--ink)]"
+                style={{ hyphens: "manual" }}
+              >
                 The unglamorous, load-bearing half.
               </h2>
             </Reveal>
           </div>
 
-          <div className="md:col-span-7 md:col-start-6">
+          <div className="md:col-span-6 md:col-start-7">
             <Reveal delay={80}>
               <p className="t-body">
                 Somebody has to decide what happens when the third-party API returns a 429 at three
