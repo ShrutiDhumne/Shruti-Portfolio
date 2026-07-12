@@ -35,6 +35,30 @@
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Two motion registers, and only two.
+     `--dur-hover` is every pointer interaction (link, card, button, nav).
+     The 0.8s `--ease` reveal is the entrance. Mixing 0.3s/0.45s/0.5s hovers
+     across neighbouring elements is what made the page feel unsynchronised. */
+  --dur-hover: 220ms;
+
+  /* ── type scale ──────────────────────────────────────────────────
+     Seven steps, no in-betweens. Before this there were seven distinct
+     sizes between 11px and 17px alone, which is a pile, not a scale. */
+  --t-hero: clamp(3rem, 8.4vw, 7rem);
+  --t-h2: clamp(2.25rem, 5vw, 4rem);
+  --t-h3: clamp(1.5rem, 2.5vw, 2rem); /* 32px at >=1280 — a round number */
+  --t-h4: 1.5rem; /* every card title: featured, compact, education */
+  /* Reaches its 22px ceiling by ~1180px rather than creeping to 21.6px at 1440.
+     A pure-vw ramp lands the lead on a fractional size at exactly the width most
+     people view the site at, which is how you end up with a 21.6px step in a
+     scale that is otherwise whole pixels. */
+  --t-lead: clamp(1.125rem, 0.75rem + 1vw, 1.375rem);
+  --t-body: 1.0625rem; /* 17px */
+  --t-small: 0.9375rem; /* 15px — card summaries, dense prose */
+  --t-caption: 0.875rem; /* 14px — the quiet sans voice: kickers, stat labels */
+  --t-meta: 0.75rem; /* 12px — mono, tracked, uppercase. 2–3 words MAX. */
+  --t-tag: 0.6875rem; /* 11px */
 }
 
 @theme inline {
@@ -79,10 +103,13 @@ body {
   color: var(--ink);
 }
 
+/* One ring, and it never changes the shape of what it rings.
+   The old rule set `border-radius: 2px` here — unlayered, so it beat `rounded-md`
+   on every control and the corners of a text input visibly snapped square the
+   moment it took focus. An outline already follows the element's own radius. */
 :focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+  outline-offset: 2px;
 }
 
 /* Motion is a courtesy, not a feature. If it isn't wanted, it isn't there. */
@@ -99,94 +126,177 @@ body {
   }
 }
 
-/* ── type ────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   EVERYTHING BELOW LIVES IN `@layer components`.
 
-.display {
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 1.05;
-  text-wrap: balance;
-}
+   This is not cosmetic. Tailwind v4 emits its utilities inside
+   `@layer utilities`, and UNLAYERED CSS OUTRANKS EVERY LAYER regardless of
+   specificity or source order. When `.t-meta` was declared at the top level,
+   every single `className="t-meta normal-case tracking-normal"` in the
+   codebase was a no-op — 18 of them — and the page rendered every kicker,
+   job title, stat label, education line and the footer copyright as tracked
+   uppercase monospace. Sentences. In caps. That one fact was the loudest
+   "amateur" signal on the site.
 
-.t-hero {
-  font-size: clamp(3rem, 8.4vw, 7rem);
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-}
+   Same mechanism ate every size override: `text-[0.9375rem]` on the card
+   summaries and `text-sm` on the skills blurbs both lost to `.t-body`'s 17px.
 
-.t-h2 {
-  font-size: clamp(2.25rem, 5vw, 4rem);
-  line-height: 1.05;
-}
+   The file already documented this trap for `.sr-only` (see the note further
+   down) and then walked into it everywhere else. Layer the components and the
+   overrides the authors already wrote all come back to life.
+   ═══════════════════════════════════════════════════════════════════ */
 
-.t-h3 {
-  font-size: clamp(1.5rem, 2.2vw, 2rem);
-  line-height: 1.15;
-}
+@layer components {
+  /* ── type ──────────────────────────────────────────────────────── */
 
-.t-lead {
-  font-size: clamp(1.125rem, 1.5vw, 1.375rem);
-  line-height: 1.6;
-  color: var(--ink-soft);
-  text-wrap: pretty;
-}
-
-.t-body {
-  font-size: 1.0625rem;
-  line-height: 1.7;
-  color: var(--ink-soft);
-  text-wrap: pretty;
-}
-
-/* Metadata: dates, indices, stack labels. Small, tracked, never shouty. */
-.t-meta {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.t-mono {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.8125rem;
-  letter-spacing: 0.01em;
-  font-variant-numeric: tabular-nums;
-}
-
-.t-num {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2.5rem, 4.5vw, 4rem);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── layout ──────────────────────────────────────────────────────── */
-
-.wrap {
-  width: 100%;
-  max-width: 1120px;
-  margin-inline: auto;
-  padding-inline: 24px;
-}
-
-@media (min-width: 768px) {
-  .wrap {
-    padding-inline: 48px;
+  .display {
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+    text-wrap: balance;
   }
-}
 
-.section {
-  padding-block: clamp(5rem, 10vw, 9rem);
-}
+  /* Optical left-alignment.
+     Instrument Serif carries a real left side bearing, so at 112px the `I` of
+     "I build backends" started ~7px right of the section label sitting directly
+     above it — the most visible misalignment on the page precisely because the
+     two elements are stacked. A negative em margin pulls the glyph's ink edge
+     back onto the column, and because it is in `em` it scales with the clamp. */
+  .t-hero {
+    font-size: var(--t-hero);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    margin-left: -0.035em;
+  }
 
-.rule {
-  height: 1px;
-  background: var(--rule);
-  border: 0;
+  .t-h2 {
+    font-size: var(--t-h2);
+    line-height: 1.05;
+    margin-left: -0.025em;
+  }
+
+  .t-h3 {
+    font-size: var(--t-h3);
+    line-height: 1.15;
+  }
+
+  /* Card titles — featured, compact, education. One size. A featured card earns
+     its status from its content and its stats row, not from a 4px bigger title. */
+  .t-h4 {
+    font-size: var(--t-h4);
+    line-height: 1.2;
+  }
+
+  .t-lead {
+    font-size: var(--t-lead);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+  }
+
+  .t-body {
+    font-size: var(--t-body);
+    line-height: 1.7;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+  }
+
+  /* 15px. Card summaries and any prose set in a narrow column. */
+  .t-small {
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+  }
+
+  /* THE QUIET SECONDARY VOICE — the thing the page was missing entirely.
+     Sans, sentence case, no tracking. This is for kickers, stat labels, job
+     titles, dates, institution lines: everything that is *information* rather
+     than a *marker*. If it is longer than three words it belongs here, not in
+     `.t-meta`. */
+  .t-caption {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: var(--t-caption);
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-muted);
+  }
+
+  /* Markers only: the 01/02/03 index, the section eyebrow, a period, a "Current"
+     pill. Tracked uppercase mono is legible for two or three words and destroys
+     word-shape at sentence length. Do not put prose in here. */
+  .t-meta {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: var(--t-meta);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .t-mono {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.8125rem;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Same face and same size as `.t-h2`, so it must carry the same metrics.
+     It was on -0.02em/1.0 against the headings' -0.015em/1.05, which made 64px
+     Instrument Serif look like two different fonts in two adjacent sections. */
+  .t-num {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: clamp(2.5rem, 4.5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── layout ────────────────────────────────────────────────────── */
+
+  .wrap {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .wrap {
+      padding-inline: 48px;
+    }
+  }
+
+  .section {
+    padding-block: clamp(5rem, 10vw, 9rem);
+  }
+
+  /* The one header unit, so every section starts the same way and its heading
+     sits on the same column as the content beneath it. */
+  .section-head {
+    max-width: 44rem;
+  }
+
+  .section-head > * + * {
+    margin-top: 1.25rem;
+  }
+
+  /* The header is fixed and 80px tall. Without this, every anchor jump scrolls the
+     target section UP UNDERNEATH it — the heading lands behind the nav pill and the
+     wordmark collides with the section label. Any fixed header needs this and it is
+     the single most common way a page ends up looking broken. */
+  section[id],
+  main [id] {
+    scroll-margin-top: 7rem;
+  }
+
+  .rule {
+    height: 1px;
+    background: var(--rule);
+    border: 0;
+  }
 }
 
 /* No hand-written `.sr-only` here, deliberately.
@@ -230,40 +340,49 @@ body {
   }
 }
 
-/* A link's underline grows from the left rather than blinking on. */
-.link {
-  position: relative;
-  color: var(--ink);
-  text-decoration: none;
-  background-image: linear-gradient(var(--accent), var(--accent));
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 0% 1px;
-  transition: background-size 0.45s var(--ease), color 0.3s var(--ease-soft);
-}
+/* ── components ──────────────────────────────────────────────────── */
 
-.link:hover,
-.link:focus-visible {
-  color: var(--accent);
-  background-size: 100% 1px;
-}
+@layer components {
+  /* A link's underline grows from the left rather than blinking on.
+     Colour and underline are on ONE duration. They used to be 0.45s and 0.3s,
+     so the underline finished 150ms after the colour did — a two-stage hover
+     that you can see happening. */
+  .link {
+    position: relative;
+    color: var(--ink);
+    text-decoration: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition:
+      background-size var(--dur-hover) var(--ease-soft),
+      color var(--dur-hover) var(--ease-soft);
+  }
 
-/* Cards settle up a couple of pixels. That is the entire trick. */
-.card {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform 0.5s var(--ease),
-    box-shadow 0.5s var(--ease),
-    border-color 0.5s var(--ease);
-}
+  .link:hover,
+  .link:focus-visible {
+    color: var(--accent);
+    background-size: 100% 1px;
+  }
 
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--rule-strong);
+  /* Cards settle up a couple of pixels. That is the entire trick. */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform var(--dur-hover) var(--ease-soft),
+      box-shadow var(--dur-hover) var(--ease-soft),
+      border-color var(--dur-hover) var(--ease-soft);
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--rule-strong);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -293,14 +412,30 @@ body {
   }
 }
 
-.tag {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  padding: 3px 8px;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  color: var(--ink-muted);
-  background: var(--paper);
-  white-space: nowrap;
+@layer components {
+  .tag {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: var(--t-tag);
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    border: 1px solid var(--rule);
+    /* 3px inside a 6px card read as a different radius family. Half the card's
+       radius is the convention, and 4px on an 11px chip is the same optical
+       roundness as 6px on a 32px-padded card. */
+    border-radius: 4px;
+    color: var(--ink-muted);
+    background: var(--paper);
+    white-space: nowrap;
+
+    /* THE 123px-TALL CHIPS.
+       The tag `<ul>` is a grid item in Work's `grid-rows-subgrid` row, so it is
+       stretched to the height of the tallest card's tag row. It is a flex
+       container, and flex's default `align-items: stretch` then blew every chip
+       up to fill that height — the AI Voice Agents card rendered "Vapi.ai" as a
+       123px empty rectangle. A chip is sized by its text, always and everywhere,
+       so pin that at the chip itself rather than relying on every consumer to
+       remember `items-start` on the list. */
+    align-self: flex-start;
+  }
 }

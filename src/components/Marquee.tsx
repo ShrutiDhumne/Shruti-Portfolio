@@ -28,19 +28,26 @@ export function Marquee() {
       aria-hidden
       className="relative overflow-hidden border-y border-[var(--rule)] py-8 select-none"
     >
-      {/* The track is duplicated so the loop is seamless: when copy A has scrolled
-          exactly its own width, copy B is sitting where A started. */}
-      <div className="marquee flex w-max items-center gap-10 md:gap-16">
+      {/* The track is duplicated so the loop is seamless — but ONLY if the two
+          copies are exactly equal. A flex `gap` on the track is not: 32 children
+          produce 31 gaps, not 32, so `translateX(-50%)` landed 32px short of
+          copy B's first word and the band jumped sideways every cycle. The
+          spacing therefore lives INSIDE each item as a right margin, which makes
+          copy A and copy B identical to the pixel. */}
+      <div className="marquee flex w-max items-center">
         {[0, 1].map((copy) => (
           <Fragment key={copy}>
             {WORDS.map((w) => (
               <Fragment key={`${copy}-${w}`}>
-                <span className="display whitespace-nowrap text-5xl text-[var(--marquee)] md:text-7xl">
+                {/* Sized BELOW the section h2s (64px). A ghosted, aria-hidden
+                    decoration was previously the largest type on the page after
+                    the hero — it out-typeset every heading it drifted past. */}
+                <span className="display mr-10 whitespace-nowrap text-4xl text-[var(--marquee)] md:mr-16 md:text-6xl">
                   {w}
                 </span>
-                <span
-                  className="shrink-0 text-2xl text-[var(--accent)] opacity-30 md:text-3xl"
-                >
+                {/* Committed, not ghosted: a small accent mark at full opacity
+                    reads as a separator. At 30% it read as a rendering artifact. */}
+                <span className="mr-10 shrink-0 text-lg text-[var(--accent)] md:mr-16 md:text-xl">
                   ✦
                 </span>
               </Fragment>

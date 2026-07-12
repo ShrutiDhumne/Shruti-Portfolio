@@ -16,8 +16,37 @@ type Status = "idle" | "sending" | "sent" | "error";
 
 const EMPTY: FormValues = { name: "", email: "", company: "", projectType: "", message: "" };
 
+/* One control spec. No vertical padding here: the single-line controls get an
+   explicit h-13 (52px) so the input and the select next to it are the SAME
+   height — previously the input's padding pushed it to 50.8px against the
+   select's 50.0px and their bottom edges never lined up. The textarea adds its
+   own py-3. 16px text, not 15px: it is on the scale and it stops iOS zooming
+   the page on focus.
+
+   No `focus:border-[var(--accent)]`: with the global 2px rust focus outline it
+   produced a rust double-ring that reads as a validation error. */
 const field =
-  "w-full rounded-md border bg-[var(--card)] px-4 py-3 text-[0.9375rem] text-[var(--ink)] outline-none transition-colors duration-300 placeholder:text-[var(--ink-muted)] focus:border-[var(--accent)]";
+  "w-full appearance-none rounded-md border bg-[var(--card)] px-4 text-base text-[var(--ink)] outline-none transition-colors duration-300 placeholder:text-[var(--ink-muted)]";
+
+const control = `${field} h-13`;
+
+/* Border colour is set inline, not by a utility: two `border-[var(--…)]` classes
+   have identical specificity and the one that wins is whichever Tailwind happens
+   to emit later — an error border that silently loses is not a risk worth taking. */
+const edge = (bad?: boolean): React.CSSProperties => ({
+  borderColor: bad ? "var(--accent)" : "var(--rule-strong)",
+});
+
+/* A designed caret, not the OS's. The select was the one control on the page
+   that was defaulted rather than drawn. Colour is --ink-muted. */
+const CHEVRON =
+  "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236f6a61' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
+
+const selectArt: React.CSSProperties = {
+  backgroundImage: CHEVRON,
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "right 16px center",
+};
 
 export function ContactForm() {
   const [values, setValues] = useState<FormValues>(EMPTY);
@@ -101,10 +130,7 @@ export function ContactForm() {
      filled-in form on screen after a successful send just invites a double-send. */
   if (status === "sent") {
     return (
-      <div
-        role="status"
-        className="card flex flex-col items-start gap-4 p-8 md:p-10"
-      >
+      <div role="status" className="card flex flex-col items-start gap-4 p-8">
         <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--accent-soft)] text-xl text-[var(--accent-deep)]">
           ✓
         </span>
@@ -119,7 +145,7 @@ export function ContactForm() {
         <button
           type="button"
           onClick={() => setStatus("idle")}
-          className="mt-2 inline-flex min-h-11 items-center text-sm font-medium text-[var(--accent)] transition-opacity duration-300 hover:opacity-70"
+          className="-my-3 mt-2 inline-flex items-center py-3 text-sm font-medium text-[var(--accent)] transition-opacity duration-300 hover:opacity-70"
         >
           Send another →
         </button>
@@ -128,7 +154,11 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="card p-8 md:p-10">
+    /* p-8: one card padding token across Work cards, the Experience sub-cards and
+       this form. It was p-8 md:p-10 — 25% more generous than the Work cards for
+       no reason, and the extra 8px is what pushed the first label out of line
+       with the "Contact" eyebrow beside it. */
+    <form onSubmit={onSubmit} noValidate className="card p-8">
       {/* honeypot — off-screen, not display:none (some bots skip hidden fields) */}
       <input
         ref={trap}
@@ -140,7 +170,12 @@ export function ContactForm() {
         className="absolute -left-[9999px] h-0 w-0 opacity-0"
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      {/* Pairs of fields only when the card can hold them. The form lives in a
+          6-of-12 column, so between 768 and 1280 that column is ~324–450px wide —
+          `sm:grid-cols-2` was pairing fields inside it and squeezing every input
+          to ~130px with the labels overlapping. One column until the card is
+          wide enough, then two. */}
+      <div className="grid gap-6 xl:grid-cols-2">
         <Field
           id={id("name")}
           label="Name"
@@ -173,15 +208,25 @@ export function ContactForm() {
         />
 
         <div className="flex flex-col gap-2">
+          {/* "What's this about?" + "(optional)" is 27 characters; set in the
+              metadata face it wrapped to two lines, which dropped the select a
+              whole line below the input beside it. Two words, one line, one row. */}
           <Label htmlFor={id("projectType")} optional>
-            What&apos;s this about?
+            Project type
           </Label>
           <select
             id={id("projectType")}
             name="projectType"
             value={values.projectType}
             onChange={set("projectType")}
-            className={`${field} min-h-[50px] border-[var(--rule-strong)]`}
+            className={`${control} pr-10`}
+            style={{
+              ...selectArt,
+              ...edge(),
+              // An empty select must look empty: the same --ink-muted every
+              // sibling placeholder uses.
+              color: values.projectType ? "var(--ink)" : "var(--ink-muted)",
+            }}
           >
             <option value="">Select one…</option>
             {PROJECT_TYPES.map((t) => (
@@ -193,7 +238,7 @@ export function ContactForm() {
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-2">
+      <div className="mt-6 flex flex-col gap-2">
         <Label htmlFor={id("message")} required>
           Message
         </Label>
@@ -206,24 +251,25 @@ export function ContactForm() {
           placeholder="What are you building, and where does it hurt?"
           aria-invalid={errors.message ? true : undefined}
           aria-describedby={errors.message ? id("message-err") : undefined}
-          className={`${field} resize-y ${
-            errors.message ? "border-[var(--accent)]" : "border-[var(--rule-strong)]"
-          }`}
+          /* resize stays (it is useful) but the browser's diagonal grab-handle
+             does not: it is the only un-drawn ornament left in the card. */
+          className={`${field} resize-y py-3 [&::-webkit-resizer]:hidden`}
+          style={edge(Boolean(errors.message))}
         />
         {errors.message && <ErrorText id={id("message-err")}>{errors.message}</ErrorText>}
       </div>
 
-      <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
+      <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
         <button
           type="submit"
           disabled={status === "sending"}
-          className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--ink)] px-7 text-sm font-medium text-[var(--paper)] transition-all duration-500 hover:-translate-y-0.5 hover:bg-[var(--accent)] disabled:pointer-events-none disabled:opacity-60"
+          className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--ink)] px-8 text-sm font-medium text-[var(--paper)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--accent)] disabled:pointer-events-none disabled:opacity-60"
           style={{ boxShadow: "var(--shadow-md)" }}
         >
           {status === "sending" ? "Sending…" : "Send message"}
         </button>
 
-        <p className="t-body text-sm">
+        <p className="text-base text-[var(--ink-soft)]">
           Or just{" "}
           <a href={`mailto:${profile.email}`} className="link">
             email me
@@ -240,7 +286,7 @@ export function ContactForm() {
       {status === "error" && (
         <p
           role="alert"
-          className="mt-5 rounded-md border border-[var(--accent)] bg-[var(--accent-soft)] px-4 py-3 text-sm text-[var(--accent-deep)]"
+          className="mt-6 rounded-md border border-[var(--accent)] bg-[var(--accent-soft)] px-4 py-3 text-sm text-[var(--accent-deep)]"
         >
           {failure}
         </p>
@@ -251,6 +297,10 @@ export function ContactForm() {
 
 /* ── bits ─────────────────────────────────────────────────────────── */
 
+/* One label system in this section. The <dl> beside the form already labels its
+   rows in mono uppercase ("EMAIL", "LINKEDIN", "BASED IN"); the form's labels
+   were Inter 14/600 sentence case, and "(optional)" was a third style again.
+   All of it is short metadata — it belongs in the metadata face. */
 function Label({
   htmlFor,
   required,
@@ -263,14 +313,14 @@ function Label({
   children: React.ReactNode;
 }) {
   return (
-    <label htmlFor={htmlFor} className="text-sm font-medium text-[var(--ink)]">
+    <label htmlFor={htmlFor} className="t-meta whitespace-nowrap">
       {children}
       {required && (
         <span className="ml-1 text-[var(--accent)]" aria-hidden>
           *
         </span>
       )}
-      {optional && <span className="ml-1.5 text-xs text-[var(--ink-muted)]">(optional)</span>}
+      {optional && <span className="ml-1.5 text-[var(--ink-muted)]">(optional)</span>}
     </label>
   );
 }
@@ -310,9 +360,8 @@ function Field({
         type={type}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-err` : undefined}
-        className={`${field} min-h-[50px] ${
-          error ? "border-[var(--accent)]" : "border-[var(--rule-strong)]"
-        }`}
+        className={control}
+        style={edge(Boolean(error))}
         {...rest}
       />
       {error && <ErrorText id={`${id}-err`}>{error}</ErrorText>}
